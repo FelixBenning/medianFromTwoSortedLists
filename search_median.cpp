@@ -123,21 +123,25 @@ double median_reduction(View<T>& long_list, View<T>& short_list) {
 
 template<typename T>
 double median_two_sorted(std::vector<T>& list_a, std::vector<T>& list_b){
+    View<T> view_a = View<T>(list_a);
+    View<T> view_b = View<T>(list_b);
     if (list_a.size() < list_b.size()) {
-        return median_reduction<T>(View<T>(list_b), View<T>(list_a));
+        return median_reduction(view_b, view_a);
     } else {
-        return median_reduction<T>(View<T>(list_a), View<T>(list_b));
+        return median_reduction(view_a, view_b);
     }
 }
 
 class Solution {
 public:
     double findMedianSortedArrays(std::vector<int>& nums1, std::vector<int>& nums2) {
-        return median_two_sorted<int>(nums1, nums2);
+        return median_two_sorted(nums1, nums2);
     }
 };
 
 int main() {
     Solution solution;
-    solution.findMedianSortedArrays(std::vector<int>({1}), std::vector<int>({1,2}));
+    auto vec_1 = std::vector<int>({1});
+    auto vec_2 = std::vector<int>({1,2});
+    solution.findMedianSortedArrays(vec_1, vec_2);
 }
