@@ -1,10 +1,13 @@
+#include <vector>
+#include <cmath>
+
 template<typename T>
 class View {
     std::vector<T> const &vec;
     size_t start = 0;
 public:
     size_t size; // should probably have a getter but *effort*
-    View(vector<T>& _vec) : vec(_vec) {
+    View(std::vector<T>& _vec) : vec(_vec) {
         this->size = vec.size(); 
     }
     void reduce_left(size_t amount) {
@@ -119,7 +122,7 @@ double median_reduction(View<T>& long_list, View<T>& short_list) {
 }
 
 template<typename T>
-double median_two_sorted(vector<T>& list_a, vector<T>& list_b){
+double median_two_sorted(std::vector<T>& list_a, std::vector<T>& list_b){
     if (list_a.size() < list_b.size()) {
         return median_reduction<T>(View<T>(list_b), View<T>(list_a));
     } else {
@@ -129,7 +132,12 @@ double median_two_sorted(vector<T>& list_a, vector<T>& list_b){
 
 class Solution {
 public:
-    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+    double findMedianSortedArrays(std::vector<int>& nums1, std::vector<int>& nums2) {
         return median_two_sorted<int>(nums1, nums2);
     }
 };
+
+int main() {
+    Solution solution;
+    solution.findMedianSortedArrays(std::vector<int>({1}), std::vector<int>({1,2}));
+}
