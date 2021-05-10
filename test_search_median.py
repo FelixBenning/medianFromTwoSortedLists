@@ -1,4 +1,5 @@
 from statistics import median
+import numpy as np
 from hypothesis import given, strategies as st, example
 from search_median import median_unbalanced
 
@@ -15,4 +16,4 @@ from search_median import median_unbalanced
 def test_median_unbalanced(long, short):
     long.sort()
     short.sort()
-    assert median(long + short) == median_unbalanced(long, short)
+    assert median(long + short) == median_unbalanced(np.array(long), np.array(short))
