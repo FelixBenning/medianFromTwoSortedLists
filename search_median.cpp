@@ -120,7 +120,7 @@ double median_two_sorted(std::vector<T>& list_a, std::vector<T>& list_b){
         ) {
             long_list.reduce_right(cut_size);
             short_list.reduce_left(cut_size);
-        } else { // easy way out overlapping left/right medians
+        } else { // jackpot: overlapping left/right medians
             long_list.reduce_slice(
                 static_cast<size_t>(std::floor(long_md_loc)),
                 static_cast<size_t>(std::ceil(long_md_loc))+1

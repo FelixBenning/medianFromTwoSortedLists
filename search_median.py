@@ -79,7 +79,7 @@ def median_two_sorted(list_a, list_b):
         elif short_list[ceil(short_md_idx)] < long_list[floor(long_md_idx)]:
             long_list.reduce_right(cut_size)
             short_list.reduce_left(cut_size)
-        else:
+        else: # jackpot: overlapping medians, pick median from medians list
             long_list.reduce_slice(floor(long_md_idx), ceil(long_md_idx) + 1)
             short_list.reduce_slice(short_left_md_idx, ceil(short_md_idx) + 1)
             return brute_force_median(long_list, short_list)
