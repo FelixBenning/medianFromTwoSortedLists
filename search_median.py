@@ -70,18 +70,18 @@ def median_two_sorted(list_a, list_b):
     # reduce the list sizes by halving (cut_size) the short_list in every step
     while short_list.length > 2:
         short_md_idx = (short_list.length - 1) / 2
-        short_lmed = floor(short_md_idx)
-        cut_size = short_list.length - short_lmed - 1
-        long_med = (long_list.length - 1) / 2
-        if long_list[ceil(long_med)] < short_list[short_lmed]:
+        short_left_md_idx = floor(short_md_idx)
+        cut_size = short_list.length - short_left_md_idx - 1
+        long_md_idx = (long_list.length - 1) / 2
+        if long_list[ceil(long_md_idx)] < short_list[short_left_md_idx]:
             long_list.reduce_left(cut_size)
             short_list.reduce_right(cut_size)
-        elif short_list[ceil(short_md_idx)] < long_list[floor(long_med)]:
+        elif short_list[ceil(short_md_idx)] < long_list[floor(long_md_idx)]:
             long_list.reduce_right(cut_size)
             short_list.reduce_left(cut_size)
         else:
-            long_list.reduce_slice(floor(long_med), ceil(long_med) + 1)
-            short_list.reduce_slice(short_lmed, ceil(short_md_idx) + 1)
+            long_list.reduce_slice(floor(long_md_idx), ceil(long_md_idx) + 1)
+            short_list.reduce_slice(short_left_md_idx, ceil(short_md_idx) + 1)
             return brute_force_median(long_list, short_list)
 
     # at this point the short_list is shorter than 2 elements
