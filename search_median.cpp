@@ -1,5 +1,6 @@
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 template<typename T>
 class View {
@@ -32,6 +33,15 @@ public:
     } 
 };
 
+/**
+ * @brief Brute force median search of sorted lists (only intended for very
+ * short lists)
+ * 
+ * @tparam T 
+ * @param list_a 
+ * @param list_b 
+ * @return double 
+ */
 template<typename T>
 double brute_force_median(View<T>& list_a, View<T>& list_b) {
     size_t med_idx = static_cast<size_t>(
@@ -76,19 +86,22 @@ double brute_force_median(View<T>& list_a, View<T>& list_b) {
     }
 }
 
+/**
+ * @brief takes two sorted vectors and returns their median in 
+ * O(log(min(list_a.size(), list_b.size()))) time
+ * 
+ * @tparam T 
+ * @param list_a 
+ * @param list_b 
+ * @return double 
+ */
 template<typename T>
-double median_unbalanced(View<T>& long_list, View<T>& short_list) {
-    if (long_list.size <= 4) {
-        return brute_force_median(long_list, short_list);
-    }
-    size_t need = long_list.size % 2 ? 3 : 4;
-    size_t left_of_median = std::floor((long_list.size -1)/2) -1;
-    long_list.reduce_to(left_of_median, need);
-    return brute_force_median(long_list, short_list);
-}
+double median_two_sorted(std::vector<T>& list_a, std::vector<T>& list_b){
+    bool a_shorter = list_a.size() < list_b.size();
+    View<T> short_list = View<T>( a_shorter ? list_a : list_b);
+    View<T> long_list = View<T>( a_shorter ? list_b : list_a );
 
-template<typename T>
-double median_reduction(View<T>& long_list, View<T>& short_list) {
+    // reduce short list to less than two elements by halving it (cut_size)
     while (short_list.size > 2) {
         double short_md_loc = static_cast<double>(short_list.size -1)/2.0;
         size_t short_lmd_loc = static_cast<size_t>(std::floor(short_md_loc));
@@ -106,7 +119,7 @@ double median_reduction(View<T>& long_list, View<T>& short_list) {
         ) {
             long_list.reduce_right(cut_size);
             short_list.reduce_left(cut_size);
-        } else {
+        } else { // easy way out overlapping left/right medians
             long_list.reduce_slice(
                 static_cast<size_t>(std::floor(long_md_loc)),
                 static_cast<size_t>(std::ceil(long_md_loc))+1
@@ -118,18 +131,14 @@ double median_reduction(View<T>& long_list, View<T>& short_list) {
             return brute_force_median(long_list, short_list);
         }
     }
-    return median_unbalanced(long_list, short_list);
-}
-
-template<typename T>
-double median_two_sorted(std::vector<T>& list_a, std::vector<T>& list_b){
-    View<T> view_a = View<T>(list_a);
-    View<T> view_b = View<T>(list_b);
-    if (list_a.size() < list_b.size()) {
-        return median_reduction(view_b, view_a);
-    } else {
-        return median_reduction(view_a, view_b);
+    // short_list is now shorter than 2 elements
+    if (long_list.size <= 4) {
+        return brute_force_median(long_list, short_list);
     }
+    size_t need = long_list.size % 2 ? 3 : 4;
+    size_t left_of_median = std::floor((long_list.size -1)/2) -1;
+    long_list.reduce_to(left_of_median, need);
+    return brute_force_median(long_list, short_list);
 }
 
 class Solution {
@@ -141,7 +150,7 @@ public:
 
 int main() {
     Solution solution;
-    auto vec_1 = std::vector<int>({1});
-    auto vec_2 = std::vector<int>({1,2});
-    solution.findMedianSortedArrays(vec_1, vec_2);
+    auto vec_1 = std::vector<int>({0, 0});
+    auto vec_2 = std::vector<int>({0, 0});
+    std::cout << solution.findMedianSortedArrays(vec_1, vec_2) << std::endl;
 }
