@@ -45,17 +45,18 @@ public:
 template<typename T>
 double brute_force_median(View<T>& list_a, View<T>& list_b) {
     size_t med_idx = static_cast<size_t>(
-        std::floor(static_cast<double>(list_a.size + list_b.size)/2)
-    );
-    bool need_one = static_cast<bool>(
+        std::floor(static_cast<double>(list_a.size + list_b.size -1)/2)
+    ); // the lower median index (if there are two medians)
+    bool odd_list = static_cast<bool>(
       (list_a.size + list_b.size) % 2  
     );
 
+    // going step by step through both lists increasing the index of the lower
+    // elements until enough elements are smaller than the median
     size_t idx_a = 0;
     size_t idx_b = 0;
-
     double first_median;
-    for (size_t idx = 0; idx < med_idx + need_one; idx++){
+    for (size_t idx = 0; idx <= med_idx; idx++){
         if (idx_b > list_b.size) {
             first_median = static_cast<double>(list_a[idx_a]);
             idx_a++;
@@ -71,7 +72,7 @@ double brute_force_median(View<T>& list_a, View<T>& list_b) {
         }
     }
 
-    if (need_one) {
+    if (odd_list) {
         return first_median;
     }
 
@@ -135,9 +136,13 @@ double median_two_sorted(std::vector<T>& list_a, std::vector<T>& list_b){
     if (long_list.size <= 4) {
         return brute_force_median(long_list, short_list);
     }
-    size_t need = long_list.size % 2 ? 3 : 4;
+    // if the long list has an odd number of elements it is enough to pick the
+    // centre 3, otherwise we need the central 4 elements. Since the small list
+    // has fewer than 2 elements this is the maximal amount it could shift
+    // the median so those are sufficient.
+    size_t need = (long_list.size % 2) ? 3 : 4;
     size_t left_of_median = std::floor((long_list.size -1)/2) -1;
-    long_list.reduce_to(left_of_median, need);
+    long_list.reduce_to(left_of_median, need); // reduce the view to those 3 or 4 elements
     return brute_force_median(long_list, short_list);
 }
 
