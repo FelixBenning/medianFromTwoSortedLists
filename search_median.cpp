@@ -1,10 +1,10 @@
 template<typename T>
 class View {
-    std::vector<T>& const vec;
+    std::vector<T> const &vec;
     size_t start = 0;
 public:
     size_t size; // should probably have a getter but *effort*
-    View(vector<T>& _vec) : vec(vec) {
+    View(vector<T>& _vec) : vec(_vec) {
         this->size = vec.size(); 
     }
     void reduce_left(size_t amount) {
@@ -17,7 +17,7 @@ public:
     void reduce_slice(size_t left, size_t right) {
         this->start += left;
         // assert this->size > right
-        this->size = right - left
+        this->size = right - left;
     }
     void reduce_to(size_t left, size_t size) {
         this->start += left;
@@ -30,7 +30,7 @@ public:
 };
 
 template<typename T>
-double brute_force_median(View<T>& const list_a, View<T>& const list_b) {
+double brute_force_median(View<T>& list_a, View<T>& list_b) {
     size_t med_idx = static_cast<size_t>(
         std::floor(static_cast<double>(list_a.size + list_b.size)/2)
     );
@@ -74,7 +74,7 @@ double brute_force_median(View<T>& const list_a, View<T>& const list_b) {
 }
 
 template<typename T>
-double median_unbalanced(View<T>& const long_list, View<T>& const short_list) {
+double median_unbalanced(View<T>& long_list, View<T>& short_list) {
     if (long_list.size <= 4) {
         return brute_force_median(long_list, short_list);
     }
@@ -85,7 +85,7 @@ double median_unbalanced(View<T>& const long_list, View<T>& const short_list) {
 }
 
 template<typename T>
-double median_reduction(View<T>& const long_list, View<T>& const short_list) {
+double median_reduction(View<T>& long_list, View<T>& short_list) {
     while (short_list.size > 2) {
         double short_md_loc = static_cast<double>(short_list.size -1)/2.0;
         size_t short_lmd_loc = static_cast<size_t>(std::floor(short_md_loc));
@@ -119,7 +119,7 @@ double median_reduction(View<T>& const long_list, View<T>& const short_list) {
 }
 
 template<typename T>
-double median_two_sorted(vector<T>& const list_a, vector<T>& const list_b){
+double median_two_sorted(vector<T>& list_a, vector<T>& list_b){
     if (list_a.size() < list_b.size()) {
         return median_reduction<T>(View<T>(list_b), View<T>(list_a));
     } else {
@@ -130,6 +130,6 @@ double median_two_sorted(vector<T>& const list_a, vector<T>& const list_b){
 class Solution {
 public:
     double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
-        
+        return median_two_sorted<int>(nums1, nums2);
     }
 };
