@@ -3,35 +3,35 @@ from math import floor, ceil
 from statistics import median
 
 
-def brute_force_median(max_4, max_2):
-    med = floor((len(max_4) + len(max_2))/2)
-    need_one = bool((len(max_4) + len(max_2)) % 2)
-    idx_4 = 0
-    idx_2 = 0
+def brute_force_median(list_a, list_b):
+    med = floor((len(list_a) + len(list_b))/2)
+    need_one = bool((len(list_a) + len(list_b)) % 2)
+    idx_a = 0
+    idx_b = 0
     for _ in range(med + need_one):
-        if idx_2 >= len(max_2):
-            first_med = max_4[idx_4]
-            idx_4 += 1
-        elif idx_4 >= len(max_4):
-            first_med = max_2[idx_2]
-            idx_2 += 1
-        elif max_4[idx_4] < max_2[idx_2]:
-            first_med = max_4[idx_4]
-            idx_4 += 1
+        if idx_b >= len(list_b):
+            first_med = list_a[idx_a]
+            idx_a += 1
+        elif idx_a >= len(list_a):
+            first_med = list_b[idx_b]
+            idx_b += 1
+        elif list_a[idx_a] < list_b[idx_b]:
+            first_med = list_a[idx_a]
+            idx_a += 1
         else:
-            first_med = max_2[idx_2]
-            idx_2 += 1
+            first_med = list_b[idx_b]
+            idx_b += 1
 
     if need_one:
         return first_med
 
-    if idx_2 >= len(max_2):
-        return (first_med + max_4[idx_4])/2
-    elif idx_4 >= len(max_4):
-        return (first_med + max_2[idx_2])/2
-    elif max_4[idx_4] < max_2[idx_2]:
-        return (first_med + max_4[idx_4])/2
-    return (first_med + max_2[idx_2])/2
+    if idx_b >= len(list_b):
+        return (first_med + list_a[idx_a])/2
+    elif idx_a >= len(list_a):
+        return (first_med + list_b[idx_b])/2
+    elif list_a[idx_a] < list_b[idx_b]:
+        return (first_med + list_a[idx_a])/2
+    return (first_med + list_b[idx_b])/2
 
 
 def median_unbalanced(long_list, short_list):
