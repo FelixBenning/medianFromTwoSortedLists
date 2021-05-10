@@ -17,12 +17,8 @@ class View:
 
     def reduce_slice(self, left, right):
         self.start += left
-        assert self.length > right
+        assert self.length >= right
         self.length = right - left
-
-    def reduce_to(self, left, size):
-        self.start += left
-        self.length = size
 
     def __getitem__(self, key):
         if key < self.length:
@@ -68,7 +64,7 @@ def median_two_sorted(list_a, list_b):
     long_list = View(list_b if a_shorter else list_a)
 
     # reduce the list sizes by halving (cut_size) the short_list in every step
-    while short_list.length > 2:
+    while short_list.length > 1:
         short_md_idx = (short_list.length - 1) / 2
         short_left_md_idx = floor(short_md_idx)
         cut_size = short_list.length - short_left_md_idx - 1
@@ -84,14 +80,13 @@ def median_two_sorted(list_a, list_b):
             short_list.reduce_slice(short_left_md_idx, ceil(short_md_idx) + 1)
             return brute_force_median(long_list, short_list)
 
-    # at this point the short_list is shorter than 2 elements
-    if long_list.length <= 4: # long_list is also short
+    # at this point the short_list only contains one element
+    if long_list.length <= 3: # long_list is also short
         return brute_force_median(long_list, short_list)
     
     # the short_list can only shift the median of the long_list by at most one
-    # since it only has two elements. We need 3 elements from an odd list
-    # or 4 from an even list (padding around the median)
-    need = 3 if long_list.length % 2 else 4
-    left_from_med = floor((long_list.length - 1) / 2) - 1
-    long_list.reduce_to(left_from_med, need)
+    # since it only has one element. We need 3 elements from an odd list
+    # or 2 from an even list (padding around the median)
+    left_median = floor((long_list.length - 1) / 2)
+    long_list.reduce_slice(left_median - long_list.length % 2, left_median +2)
     return brute_force_median(long_list, short_list)

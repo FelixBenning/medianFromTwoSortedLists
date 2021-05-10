@@ -20,14 +20,9 @@ public:
     }
     void reduce_slice(size_t left, size_t right) {
         this->start += left;
-        // assert this->size > right
+        // assert this->size >= right
         this->size = right - left;
     }
-    void reduce_to(size_t left, size_t size) {
-        this->start += left;
-        this->size = size;
-    }
-    
     T operator[](size_t key) {
         return this->vec[this->start + key];
     } 
@@ -103,7 +98,7 @@ double median_two_sorted(std::vector<T>& list_a, std::vector<T>& list_b){
     View<T> long_list = View<T>( a_shorter ? list_b : list_a );
 
     // reduce short list to less than two elements by halving it (cut_size)
-    while (short_list.size > 2) {
+    while (short_list.size > 1) {
         double short_md_loc = static_cast<double>(short_list.size -1)/2.0;
         size_t short_lmd_loc = static_cast<size_t>(std::floor(short_md_loc));
         size_t cut_size = short_list.size - short_lmd_loc -1;
@@ -133,16 +128,14 @@ double median_two_sorted(std::vector<T>& list_a, std::vector<T>& list_b){
         }
     }
     // short_list is now shorter than 2 elements
-    if (long_list.size <= 4) {
+    if (long_list.size <= 3) {
         return brute_force_median(long_list, short_list);
     }
-    // if the long list has an odd number of elements it is enough to pick the
-    // centre 3, otherwise we need the central 4 elements. Since the small list
-    // has fewer than 2 elements this is the maximal amount it could shift
-    // the median so those are sufficient.
-    size_t need = (long_list.size % 2) ? 3 : 4;
-    size_t left_of_median = std::floor((long_list.size -1)/2) -1;
-    long_list.reduce_to(left_of_median, need); // reduce the view to those 3 or 4 elements
+    // the short_list can only shift the median of the long_list by at most one
+    // since it only has one element. We need 3 elements from an odd list
+    // or 2 from an even list (padding around the median)
+    size_t left_median = std::floor((long_list.size -1)/2);
+    long_list.reduce_slice(left_median - long_list.size % 2, left_median +2);
     return brute_force_median(long_list, short_list);
 }
 
@@ -156,6 +149,6 @@ public:
 int main() {
     Solution solution;
     auto vec_1 = std::vector<int>({0, 0});
-    auto vec_2 = std::vector<int>({0, 0});
+    auto vec_2 = std::vector<int>({1, 3});
     std::cout << solution.findMedianSortedArrays(vec_1, vec_2) << std::endl;
 }
